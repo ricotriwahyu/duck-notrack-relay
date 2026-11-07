@@ -1,0 +1,28 @@
+services:
+  zexrtw:
+    build: .
+    container_name: zexrtw-relay
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=${PORT:-8080}
+      - DUCKAI_MODEL=${DUCKAI_MODEL:-gpt-6-luna}
+      - DUCKAI_API_KEY=${DUCKAI_API_KEY:-}
+      - PUBLIC_BASE_URL=${PUBLIC_BASE_URL:-http://localhost:8080}
+      - DUCKAI_PROXIES=${DUCKAI_PROXIES:-}
+      - DUCKAI_CONCURRENCY=${DUCKAI_CONCURRENCY:-3}
+      - DUCKAI_WARM_MIN=${DUCKAI_WARM_MIN:-2.0}
+      - DUCKAI_WARM_MAX=${DUCKAI_WARM_MAX:-7.0}
+      - DUCKAI_PREWARM=${DUCKAI_PREWARM:-1}
+    deploy:
+      resources:
+        limits:
+          # High-performance 4GB allocation for Radxa 8GB SBC
+          memory: 4096M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
